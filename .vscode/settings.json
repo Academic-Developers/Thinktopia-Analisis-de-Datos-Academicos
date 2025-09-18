@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./Estadistica-y-probabilidad-aplicadas/src"
+    ]
+}

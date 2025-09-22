@@ -4,7 +4,8 @@ from typing import Optional, Dict, Any
 
 def _default_path(filename: str = "student_performance.csv") -> str:
     """Devuelve la ruta absoluta del archivo de datos."""
-    return os.path.join(os.path.dirname(__file__), "..", "data", filename)
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    return os.path.join(base_dir, "data", filename)
 
 def cargar_datos() -> Optional[pd.DataFrame]:
     """Carga el archivo CSV de datos de estudiantes y devuelve un DataFrame de pandas.
@@ -18,6 +19,16 @@ def cargar_datos() -> Optional[pd.DataFrame]:
         print("Error al cargar CSV:", err)
         return None
 
+def limpiar_datos(df: Optional[pd.DataFrame]) -> Optional[pd.DataFrame]:
+    """Devuelve un DataFrame limpio: elimina duplicados y muestra cuántos nulos hay."""
+    if df is None or df.empty:
+        return None
+    df_limpio = df.drop_duplicates()
+    print(f"Filas eliminadas por duplicados: {len(df) - len(df_limpio)}")
+    print("Valores nulos por columna después de limpiar:")
+    print(df_limpio.isnull().sum())
+    return df_limpio
+
 def obtener_resumen_inicial(df: Optional[pd.DataFrame], n: int = 6) -> Optional[Dict[str, Any]]:
     """Devuelve un resumen inicial del DataFrame."""
     if df is None or df.empty:
@@ -27,14 +38,22 @@ def obtener_resumen_inicial(df: Optional[pd.DataFrame], n: int = 6) -> Optional[
         "head": df.head(n),
         "nulls": df.isnull().sum(),
         "describe": df.describe().transpose(),
-        "dtypes": df.dtypes
+        "dtypes": df.dtypes,
+        "df": df  # Agregamos el DataFrame completo para usarlo en otras funciones
     }
 
+def obtener_valores_unicos(df: Optional[pd.DataFrame]) -> Optional[Dict[str, Any]]:
+    """Devuelve un diccionario con los valores únicos de cada columna categórica."""
+    if df is None or df.empty:
+        return None
+    return {col: df[col].unique() for col in df.select_dtypes(include=['object', 'category']).columns}
+
 def imprimir_resumen(resumen: Optional[Dict[str, Any]]) -> None:
-    """Imprime el resumen inicial generado por obtener_resumen_inicial."""
+    """Imprime el resumen inicial del DataFrame."""
     if resumen is None:
         print("No hay datos para mostrar el resumen.")
         return
+    
     print("\n--- Resumen inicial de las Primeras 6 Filas ---")
     print(f"Cant de Filas: {resumen['shape'][0]}, Cant de Columnas: {resumen['shape'][1]}")
     print("\nPrimeras filas:")
@@ -45,6 +64,14 @@ def imprimir_resumen(resumen: Optional[Dict[str, Any]]) -> None:
     print(resumen['describe'])
     print("\nTipos de datos por columna:")
     print(resumen['dtypes'])
+
+    # Aquí llamamos a obtener_valores_unicos() y lo imprimimos
+    df_completo = resumen.get('df')
+    valores_unicos = obtener_valores_unicos(df_completo)
+    if valores_unicos:
+        print("\n--- Valores Únicos por Columna Categórica ---")
+        for col, valores in valores_unicos.items():
+            print(f"- {col}: {valores}")
 
 def obtener_columnas_info(df: Optional[pd.DataFrame]) -> Optional[pd.DataFrame]:
     """Devuelve un DataFrame con información de columnas: tipo y valores únicos."""
@@ -92,21 +119,3 @@ def sugerencias_mejora(df: Optional[pd.DataFrame]) -> None:
     print("- Revisar correlación entre entrega de tareas y puntajes.")
     print("- Tutores focalizados para asignaturas con baja media.")
     print("- Habilitar seguimiento por estudiante para detectar tendencia a la baja.")
-
-# Funciones adicionales útiles
-
-def obtener_valores_unicos(df: Optional[pd.DataFrame]) -> Optional[Dict[str, Any]]:
-    """Devuelve un diccionario con los valores únicos de cada columna categórica."""
-    if df is None or df.empty:
-        return None
-    return {col: df[col].unique() for col in df.select_dtypes(include=['object', 'category']).columns}
-
-def limpiar_datos(df: Optional[pd.DataFrame]) -> Optional[pd.DataFrame]:
-    """Devuelve un DataFrame limpio: elimina duplicados y muestra cuántos nulos hay."""
-    if df is None or df.empty:
-        return None
-    df_limpio = df.drop_duplicates()
-    print(f"Filas eliminadas por duplicados: {len(df) - len(df_limpio)}")
-    print("Valores nulos por columna después de limpiar:")
-    print(df_limpio.isnull().sum())
-    return df_limpio

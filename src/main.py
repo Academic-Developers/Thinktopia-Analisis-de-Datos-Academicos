@@ -39,11 +39,15 @@ def main():
             opcion = main_menu()
             if opcion == 1:
                 df = analisis_datos.cargar_datos()
-                if df is not None:
+                df_global = analisis_datos.limpiar_datos(df)
+                if df_global is not None:
                     resumen = analisis_datos.obtener_resumen_inicial(df)
                     analisis_datos.imprimir_resumen(resumen)
                     info = analisis_datos.obtener_columnas_info(df)
                     analisis_datos.imprimir_columnas_info(info)
+                else:
+                    print("No se pudo cargar o limpiar el DataFrame.")
+
             elif opcion == 2:
                 if df is None:
                     mostrar_mensaje_cargar_datos()

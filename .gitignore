@@ -3,3 +3,8 @@
 .vscode
 .node_modules
 .DS_Store
+__pycache__/
+
+# Ignorar archivos compilados de Python
+*.
+pyc

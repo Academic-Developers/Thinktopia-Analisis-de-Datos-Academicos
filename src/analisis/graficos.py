@@ -1,7 +1,7 @@
 # src/graficos.py
 import pandas as pd
 import matplotlib.pyplot as plt
-# import seaborn as sns
+import seaborn as sns
 import os
 from datetime import datetime
 from typing import Optional, List, Dict, Any

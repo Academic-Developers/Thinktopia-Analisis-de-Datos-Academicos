@@ -65,7 +65,7 @@ def main():
                 if df is None:
                     mostrar_mensaje_cargar_datos()
                 else:
-                    col = analisis_datos.seleccionar_columna(df, purpose='estadística')
+                    col = analisis_datos.seleccionar_columnas(df, purpose='estadística')
                     if col:
                         res = estadisticas.mostrar_estadisticas_generales(df, col)
                         resultados['estadisticas'][col] = res

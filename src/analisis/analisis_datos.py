@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any,List
 
 def _default_path(filename: str = "student_performance.csv") -> str:
     """Devuelve la ruta absoluta del archivo de datos."""
@@ -91,17 +91,18 @@ def imprimir_columnas_info(info: Optional[pd.DataFrame]) -> None:
     for i, (col, row) in enumerate(info.iterrows()):
         print(f"  {i+1}. {col} (dtype={row['dtype']}) - {row['valores_unicos']} valores únicos")
 
-def seleccionar_columna(df: Optional[pd.DataFrame], purpose: str = 'general') -> Optional[str]:
+def seleccionar_columnas(df: Optional[pd.DataFrame], purpose: str = 'general') -> Optional[str]:
     """Permite al usuario seleccionar una columna del DataFrame por nombre o índice."""
     info = obtener_columnas_info(df)
     imprimir_columnas_info(info)
     if df is None or df.empty:
         return None
-    entrada = input(f"Ingrese el número o nombre de la columna para {purpose}: ").strip()
-    if entrada.isdigit():
-        idx = int(entrada) - 1
-        if 0 <= idx < len(df.columns):
-            return df.columns[idx]
+    entrada = input(f"Ingrese los números o nombres de las columnas separadas con coma para {purpose}: ").strip()
+    columnas = [col.strip() for col in entrada.split(",")]
+    if all(col.isdigit() for col in columnas):
+        indices = [int(col) - 1 for col in columnas]
+        if all(0 <= idx < len(df.columns) for idx in indices):
+            return df.columns[indices].tolist()
         else:
             print("Índice fuera de rango.")
             return None
@@ -111,6 +112,51 @@ def seleccionar_columna(df: Optional[pd.DataFrame], purpose: str = 'general') ->
         else:
             print("Nombre de columna no encontrado.")
             return None
+
+def seleccionar_columnas(df: Optional[pd.DataFrame], purpose: str = 'general') -> Optional[List[str]]:
+    """
+    Permite al usuario seleccionar una o varias columnas del DataFrame.
+    
+    Args:
+        df: DataFrame de pandas a procesar.
+        purpose: Cadena que describe el propósito de la selección.
+    
+    Returns:
+        Una lista de nombres de columnas seleccionadas o None si la selección es inválida.
+    """
+    if df is None or df.empty:
+        print("No hay datos para seleccionar columnas.")
+        return None
+
+    imprimir_columnas_info(obtener_columnas_info(df))
+    
+    entrada = input(f"Ingrese los números o nombres de las columnas para {purpose} (separados por coma): ").strip()
+    
+    if not entrada:
+        print("Selección cancelada.")
+        return None
+        
+    nombres_seleccionados = []
+    
+    # Procesa cada entrada separada por coma
+    for item in [col.strip() for col in entrada.split(',')]:
+        if item.isdigit():
+            idx = int(item) - 1
+            if 0 <= idx < len(df.columns):
+                nombres_seleccionados.append(df.columns[idx])
+            else:
+                print(f"Advertencia: El índice '{item}' está fuera de rango y será ignorado.")
+        elif item in df.columns:
+            nombres_seleccionados.append(item)
+        else:
+            print(f"Advertencia: El nombre de columna '{item}' no se encontró y será ignorado.")
+
+    if not nombres_seleccionados:
+        print("No se seleccionó ninguna columna válida.")
+        return None
+    
+    return list(set(nombres_seleccionados)) # Retorna una lista sin duplicados
+
 
 def sugerencias_mejora(df: Optional[pd.DataFrame]) -> None:
     """Proporciona sugerencias de mejora basadas en el análisis de los datos."""

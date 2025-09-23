@@ -9,8 +9,15 @@ _ops = {
     "==": operator.eq,
     "!=": operator.ne,
 }
+# AGREGAR
+# Probabilidad condicional.
+# Tablas de contingencia.
+# Cálculo de probabilidades simples.
 
 def _leer_condicion(df, label):
+    """ Lee una condición del usuario: columna, operador, valor.
+        Retorna (columna, función operador, valor) o None si error.
+    """
     col = seleccionar_columna(df, label)
     if not col:
         return None
@@ -31,6 +38,7 @@ def _leer_condicion(df, label):
     return (col, _ops[op], val_conv)
 
 def _aplica_cond(df, cond):
+    """ Aplica una condición al DataFrame y retorna una máscara booleana. """
     col, op_func, val = cond
     try:
         return op_func(df[col], val)
@@ -42,6 +50,9 @@ def _aplica_cond(df, cond):
             return op_func(df[col].astype(str), str(val))
 
 def _prob_condicional(df, cond_A, cond_B):
+    """ Calcula P(A|B) = P(A and B) / P(B)
+        Retorna (P(A|B), n(A and B), n(B)) o (None, 0, 0) si n(B)=0
+    """
     mask_B = _aplica_cond(df, cond_B)
     n_B = mask_B.sum()
     if n_B == 0:
@@ -51,6 +62,7 @@ def _prob_condicional(df, cond_A, cond_B):
     return p, int(mask_AandB.sum()), int(n_B)
 
 def menu_probabilidades(df, resultados):
+    """ Muestra el menú de probabilidades y gestiona la selección del usuario. """
     while True:
         print("\n--- Menú de probabilidades ---")
         print("1) P(buena nota | alta asistencia)")

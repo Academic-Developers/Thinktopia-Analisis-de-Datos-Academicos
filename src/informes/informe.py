@@ -6,6 +6,7 @@ OUTPUT_DIR = os.path.join(os.getcwd(), "outputs", "reports")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def _resultado_a_texto(resultados):
+    """ Convierte los resultados del análisis a un formato de texto. """
     lines = []
     lines.append("# Informe de análisis\n")
     lines.append("## Estadísticas guardadas\n")
@@ -22,6 +23,7 @@ def _resultado_a_texto(resultados):
     return "\n".join(lines)
 
 def guardar_informe(resultados, df, filename=None):
+    """ Guarda el informe en un archivo Markdown y los resultados crudos en JSON. """
     if filename is None:
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = os.path.join(OUTPUT_DIR, f"report_{ts}.md")

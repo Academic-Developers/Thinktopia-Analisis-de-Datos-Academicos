@@ -4,6 +4,7 @@ import json
 import pandas as pd
 from typing import Optional, Dict, Any
 
+# Directorio para guardar los informes
 OUTPUT_DIR = os.path.join(os.getcwd(), "outputs", "reports")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 

@@ -16,7 +16,7 @@ def main_menu():
     print("║ {:<2} {:<60}║".format("4.", "📊 Análisis estadístico descriptivo"))
     print("║ {:<2} {:<60}║".format("5.", "📈 Generar gráficos de visualización"))
     print("║ {:<2} {:<60}║".format("6.", "🔢 Analizar probabilidad condicional"))
-    print("║ {:<2} {:<60}║".format("7.", "💡 Ver propuesta de estrategias de mejora"))
+    print("║ {:<2} {:<60}║".format("7.", "💡 Ver propuestas de estrategias de mejora"))
     print("║ {:<2} {:<60}║".format("8.", "📝 Guardar resultados en un informe"))
     print("║ {:<2} {:<60}║".format("9.", "🚪 Salir de la aplicación"))
     print("╚" + "═" * 65 + "╝")
